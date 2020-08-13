@@ -49,13 +49,16 @@ const Home: React.FC = () => {
           <CityContainer>
             <InfoContainer>
               <CityName>Blumenau</CityName>
+
               <WeatherDescription>Nublado</WeatherDescription>
+
               <TemperatureRange>14ºC - 23ºC</TemperatureRange>
             </InfoContainer>
 
             <WeatherContainer>
               <TempeatureContainer>
                 <Temperature>23ºC</Temperature>
+
                 <Icon name="cloud" size={40} color={colors.gray} />
               </TempeatureContainer>
 
