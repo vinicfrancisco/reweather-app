@@ -11,8 +11,16 @@ import {
   HeaderWeatherTitle,
   SearchButton,
   CitiesList,
+  CityContainer,
+  InfoContainer,
+  CityName,
+  WeatherDescription,
+  TemperatureRange,
+  WeatherContainer,
+  TempeatureContainer,
+  Temperature,
+  FavoriteButton,
 } from './styles';
-import Weather from '~/components/Weather';
 
 const Home: React.FC = () => {
   const { navigate } = useNavigation();
@@ -20,6 +28,13 @@ const Home: React.FC = () => {
   const handleNavigateToSearch = useCallback(() => {
     navigate('Search');
   }, [navigate]);
+
+  const handleNavigateToDetail = useCallback(
+    (id: string) => {
+      navigate('City', { id });
+    },
+    [navigate]
+  );
 
   return (
     <Container>
@@ -37,7 +52,29 @@ const Home: React.FC = () => {
       <CitiesList
         data={[1, 2, 3, 4, 5]}
         keyExtractor={(city) => city}
-        renderItem={({ item: city }) => <Weather />}
+        renderItem={({ item: city }) => (
+          <CityContainer onPress={() => handleNavigateToDetail(city)}>
+            <InfoContainer>
+              <CityName>Blumenau</CityName>
+
+              <WeatherDescription>Nublado</WeatherDescription>
+
+              <TemperatureRange>14ºC - 23ºC</TemperatureRange>
+            </InfoContainer>
+
+            <WeatherContainer>
+              <TempeatureContainer>
+                <Temperature>23ºC</Temperature>
+
+                <Icon name="cloud" size={40} color={colors.gray} />
+              </TempeatureContainer>
+
+              <FavoriteButton onPress={() => {}}>
+                <Icon name="heart" size={26} color="#f00" />
+              </FavoriteButton>
+            </WeatherContainer>
+          </CityContainer>
+        )}
       />
     </Container>
   );
