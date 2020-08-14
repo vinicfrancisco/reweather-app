@@ -6,7 +6,7 @@ import { NavigationContainer } from '@react-navigation/native';
 
 import Routes from './routes';
 import colors from './styles/colors';
-// import AppProvider from './hooks';
+import AppProvider from './hooks';
 
 const App: React.FC = () => (
   <NavigationContainer>
@@ -16,9 +16,9 @@ const App: React.FC = () => (
       translucent
     />
 
-    {/* <AppProvider> */}
-    <Routes />
-    {/* </AppProvider> */}
+    <AppProvider>
+      <Routes />
+    </AppProvider>
   </NavigationContainer>
 );
 
