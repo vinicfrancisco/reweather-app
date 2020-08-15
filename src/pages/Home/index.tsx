@@ -2,7 +2,10 @@ import React, { useCallback } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
 
+import { useWeather } from '~/hooks/weather';
 import colors from '~/styles/colors';
+
+import weatherTypes from './weatherTypes';
 
 import {
   Container,
@@ -24,6 +27,7 @@ import {
 
 const Home: React.FC = () => {
   const { navigate } = useNavigation();
+  const { citiesWeather } = useWeather();
 
   const handleNavigateToSearch = useCallback(() => {
     navigate('Search');
@@ -50,23 +54,29 @@ const Home: React.FC = () => {
       </Header>
 
       <CitiesList
-        data={[1, 2, 3, 4, 5]}
+        data={citiesWeather}
         keyExtractor={(city) => city}
         renderItem={({ item: city }) => (
           <CityContainer onPress={() => handleNavigateToDetail(city)}>
             <InfoContainer>
-              <CityName>Blumenau</CityName>
+              <CityName>{city.name}</CityName>
 
-              <WeatherDescription>Nublado</WeatherDescription>
+              <WeatherDescription>
+                {weatherTypes[city.weather].title}
+              </WeatherDescription>
 
-              <TemperatureRange>14ºC - 23ºC</TemperatureRange>
+              <TemperatureRange>{`${city.min}ºC - ${city.max}ºC`}</TemperatureRange>
             </InfoContainer>
 
             <WeatherContainer>
               <TempeatureContainer>
-                <Temperature>23ºC</Temperature>
+                <Temperature>{`${city.temp}ºC`}</Temperature>
 
-                <Icon name="cloud" size={40} color={colors.gray} />
+                <Icon
+                  name={weatherTypes[city.weather].icon}
+                  size={40}
+                  color={colors.gray}
+                />
               </TempeatureContainer>
 
               <FavoriteButton onPress={() => {}}>
