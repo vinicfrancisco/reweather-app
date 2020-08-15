@@ -7,39 +7,97 @@ import React, {
 } from 'react';
 import api from '../services/api';
 
-interface City {
+import CityWeatherDTO from '~/dtos/CityWeatherDTO';
+
+interface CityWeather {
+  id: number;
   name: string;
-  weather: string;
+  temp: string;
   min: number;
   max: number;
+  weather: string;
+  lat: number;
+  lon: number;
 }
 
 interface WeatherContextData {
-  cities: City[];
+  citiesWeather: CityWeather[];
+  loading: boolean;
+  addCity(id: number): void;
+  removeCity(id: number): void;
 }
+
+const API_KEY = '56cd1e8db1435f9c17de8b0349caaee9';
 
 export const WeatherContext = createContext<WeatherContextData>(
   {} as WeatherContextData
 );
 
 export const WeatherProvider: React.FC = ({ children }) => {
+  const [citiesIds, setCitiesIds] = useState<number[]>([3469968]);
+  const [citiesWeather, setCitiesWeather] = useState<CityWeather[]>([]);
   const [loading, setLoading] = useState(true);
-  const [cities, setCities] = useState<City[]>([]);
 
-  useEffect(() => {
-    async function loadCities(): Promise<void> {
-      const response = await api.get('/weather', {
-        q: 'Blumenau',
-      });
+  const addCity = useCallback((id: number) => {
+    setCitiesIds((state) => {
+      const findCity = state.some((city) => city === id);
 
-      setCities([response.data]);
-    }
+      if (!findCity) {
+        return [...state, id];
+      }
 
-    loadCities();
+      return state;
+    });
   }, []);
 
+  const removeCity = useCallback((id: number) => {
+    setCitiesIds((state) => state.filter((city) => city !== id));
+  }, []);
+
+  useEffect(() => {
+    async function loadCitiesWeather(): Promise<void> {
+      try {
+        setLoading(true);
+
+        const response = await api.get('/group', {
+          params: {
+            id: citiesIds.join(','),
+            appid: API_KEY,
+            units: 'metric',
+            lang: 'pt',
+          },
+        });
+
+        setCitiesWeather(
+          response.data.list.map((city: CityWeatherDTO) => {
+            const { id, name, coord, main, weather } = city;
+
+            return {
+              id,
+              name,
+              lat: coord.lat,
+              lon: coord.lon,
+              weather: weather[0].main,
+              temp: Math.round(main.temp),
+              min: Math.round(main.temp_min),
+              max: Math.round(main.temp_max),
+            };
+          })
+        );
+
+        setLoading(false);
+      } catch (err) {
+        setLoading(false);
+      }
+    }
+
+    loadCitiesWeather();
+  }, [citiesIds]);
+
   return (
-    <WeatherContext.Provider value={{ cities }}>
+    <WeatherContext.Provider
+      value={{ citiesWeather, loading, addCity, removeCity }}
+    >
       {children}
     </WeatherContext.Provider>
   );
