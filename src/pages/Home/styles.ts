@@ -1,6 +1,7 @@
 import styled from 'styled-components/native';
 import { FlatList } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
+import { CityWeather } from '~/hooks/weather';
 import colors from '~/styles/colors';
 
 export const Container = styled.View`
@@ -30,7 +31,7 @@ export const HeaderWeatherTitle = styled.Text`
 
 export const SearchButton = styled.TouchableOpacity``;
 
-export const CitiesList = styled(FlatList as new () => FlatList)`
+export const CitiesList = styled(FlatList as new () => FlatList<CityWeather>)`
   padding: 32px 24px 16px;
 `;
 

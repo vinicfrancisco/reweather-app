@@ -34,7 +34,7 @@ const Home: React.FC = () => {
   }, [navigate]);
 
   const handleNavigateToDetail = useCallback(
-    (id: string) => {
+    (id: number) => {
       navigate('City', { id });
     },
     [navigate]
@@ -55,9 +55,9 @@ const Home: React.FC = () => {
 
       <CitiesList
         data={citiesWeather}
-        keyExtractor={(city) => city}
+        keyExtractor={(city) => String(city.id)}
         renderItem={({ item: city }) => (
-          <CityContainer onPress={() => handleNavigateToDetail(city)}>
+          <CityContainer onPress={() => handleNavigateToDetail(city.id)}>
             <InfoContainer>
               <CityName>{city.name}</CityName>
 
@@ -80,7 +80,7 @@ const Home: React.FC = () => {
               </TempeatureContainer>
 
               <FavoriteButton onPress={() => {}}>
-                <Icon name="heart" size={26} color="#f00" />
+                <Icon name="heart" size={26} color={colors.red} />
               </FavoriteButton>
             </WeatherContainer>
           </CityContainer>
