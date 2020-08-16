@@ -39,6 +39,7 @@
     "@typescript-eslint/no-empty-function": "off",
     "camelcase": "off",
     "react/prop-types": "off",
+    "react/jsx-curly-newline": "off",
     "react/jsx-one-expression-per-line": "off",
     "react/jsx-props-no-spreading": "off",
     "react-hooks/rules-of-hooks": "error",
