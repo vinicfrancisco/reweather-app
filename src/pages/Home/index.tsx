@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import { useWeather } from '~/hooks/weather';
 import colors from '~/styles/colors';
 
-import weatherTypes from './weatherTypes';
+import weatherTypes from '~/utils/weatherTypes';
 
 import {
   Container,
@@ -25,6 +25,11 @@ import {
   FavoriteButton,
 } from './styles';
 
+interface NavigateToDetailProps {
+  lat: number;
+  lon: number;
+}
+
 const Home: React.FC = () => {
   const { navigate } = useNavigation();
   const { citiesWeather } = useWeather();
@@ -34,8 +39,8 @@ const Home: React.FC = () => {
   }, [navigate]);
 
   const handleNavigateToDetail = useCallback(
-    (id: number) => {
-      navigate('City', { id });
+    ({ lat, lon }: NavigateToDetailProps) => {
+      navigate('City', { lat, lon });
     },
     [navigate]
   );
@@ -57,7 +62,14 @@ const Home: React.FC = () => {
         data={citiesWeather}
         keyExtractor={(city) => String(city.id)}
         renderItem={({ item: city }) => (
-          <CityContainer onPress={() => handleNavigateToDetail(city.id)}>
+          <CityContainer
+            onPress={() =>
+              handleNavigateToDetail({
+                lat: city.lat,
+                lon: city.lon,
+              })
+            }
+          >
             <InfoContainer>
               <CityName>{city.name}</CityName>
 
