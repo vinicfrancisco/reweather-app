@@ -9,7 +9,7 @@ interface WeatherTypesList {
 }
 
 const WeatherTypes: WeatherTypesList = {
-  ThunderStorm: {
+  Thunderstorm: {
     icon: 'cloud-lightning',
     title: 'Tempestade',
     color: 'gray',
