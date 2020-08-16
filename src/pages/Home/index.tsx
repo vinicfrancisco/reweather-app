@@ -4,8 +4,9 @@ import Icon from 'react-native-vector-icons/Feather';
 
 import { useWeather } from '~/hooks/weather';
 import colors from '~/styles/colors';
-
 import weatherTypes from '~/utils/weatherTypes';
+
+import CityPlaceholder from './components/CityPlaceholder';
 
 import {
   Container,
@@ -33,7 +34,7 @@ interface NavigateToDetailProps {
 
 const Home: React.FC = () => {
   const { navigate } = useNavigation();
-  const { citiesWeather } = useWeather();
+  const { citiesWeather, loading } = useWeather();
 
   const handleNavigateToSearch = useCallback(() => {
     navigate('Search');
@@ -63,41 +64,47 @@ const Home: React.FC = () => {
         data={citiesWeather}
         keyExtractor={(city) => String(city.id)}
         renderItem={({ item: city }) => (
-          <CityContainer
-            onPress={() =>
-              handleNavigateToDetail({
-                lat: city.lat,
-                lon: city.lon,
-                city: city.name,
-              })
-            }
-          >
-            <InfoContainer>
-              <CityName>{city.name}</CityName>
+          <>
+            {loading ? (
+              <CityPlaceholder />
+            ) : (
+              <CityContainer
+                onPress={() =>
+                  handleNavigateToDetail({
+                    lat: city.lat,
+                    lon: city.lon,
+                    city: city.name,
+                  })
+                }
+              >
+                <InfoContainer>
+                  <CityName>{city.name}</CityName>
 
-              <WeatherDescription>
-                {weatherTypes[city.weather].title}
-              </WeatherDescription>
+                  <WeatherDescription>
+                    {weatherTypes[city.weather].title}
+                  </WeatherDescription>
 
-              <TemperatureRange>{`${city.min}ºC - ${city.max}ºC`}</TemperatureRange>
-            </InfoContainer>
+                  <TemperatureRange>{`${city.min}ºC - ${city.max}ºC`}</TemperatureRange>
+                </InfoContainer>
 
-            <WeatherContainer>
-              <TempeatureContainer>
-                <Temperature>{`${city.temp}ºC`}</Temperature>
+                <WeatherContainer>
+                  <TempeatureContainer>
+                    <Temperature>{`${city.temp}ºC`}</Temperature>
 
-                <Icon
-                  name={weatherTypes[city.weather].icon}
-                  size={40}
-                  color={colors.gray}
-                />
-              </TempeatureContainer>
+                    <Icon
+                      name={weatherTypes[city.weather].icon}
+                      size={40}
+                      color={weatherTypes[city.weather].color}
+                    />
+                  </TempeatureContainer>
 
-              <FavoriteButton onPress={() => {}}>
-                <Icon name="heart" size={26} color={colors.red} />
-              </FavoriteButton>
-            </WeatherContainer>
-          </CityContainer>
+                  <FavoriteButton onPress={() => {}}>
+                    <Icon name="heart" size={26} color={colors.red} />
+                  </FavoriteButton>
+                </WeatherContainer>
+              </CityContainer>
+            )}
+          </>
         )}
       />
     </Container>

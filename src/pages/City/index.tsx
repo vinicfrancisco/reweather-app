@@ -8,6 +8,8 @@ import colors from '~/styles/colors';
 import DailyWeatherDTO from '~/dtos/DailyWeatherDTO';
 import weatherTypes from '~/utils/weatherTypes';
 
+import DayPlaceholder from './components/DayPlaceholder';
+
 import {
   Container,
   Header,
@@ -51,7 +53,15 @@ const City: React.FC = () => {
 
   const { lat, lon, city } = route.params as RouteParams;
 
-  const [weekWeather, setWeekWeather] = useState<DayWeather[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [weekWeather, setWeekWeather] = useState<DayWeather[]>([
+    {} as DayWeather,
+    {} as DayWeather,
+    {} as DayWeather,
+    {} as DayWeather,
+    {} as DayWeather,
+    {} as DayWeather,
+  ]);
 
   const handleGoBack = useCallback(() => {
     goBack();
@@ -82,6 +92,7 @@ const City: React.FC = () => {
 
   useEffect(() => {
     async function loadData(): Promise<void> {
+      setLoading(true);
       const response = await api.get('/onecall', {
         params: {
           exclude: 'current,minutely,hourly',
@@ -104,6 +115,7 @@ const City: React.FC = () => {
           };
         })
       );
+      setLoading(false);
     }
 
     loadData();
@@ -121,31 +133,37 @@ const City: React.FC = () => {
 
       <DaysList
         data={weekWeather}
-        keyExtractor={(day) => String(day.date)}
+        keyExtractor={() => String(Math.random())}
         renderItem={({ item: day }) => (
-          <DayContainer>
-            <InfoContainer>
-              <DayName>{getWeekDay(day.date)}</DayName>
+          <>
+            {loading ? (
+              <DayPlaceholder />
+            ) : (
+              <DayContainer>
+                <InfoContainer>
+                  <DayName>{getWeekDay(day.date)}</DayName>
 
-              <WeatherDescription>
-                {weatherTypes[day.weather].title}
-              </WeatherDescription>
+                  <WeatherDescription>
+                    {weatherTypes[day.weather].title}
+                  </WeatherDescription>
 
-              <TemperatureRange>{`${day.min}ºC - ${day.max}ºC`}</TemperatureRange>
-            </InfoContainer>
+                  <TemperatureRange>{`${day.min}ºC - ${day.max}ºC`}</TemperatureRange>
+                </InfoContainer>
 
-            <WeatherContainer>
-              <TempeatureContainer>
-                <Temperature>{`${day.temp}ºC`}</Temperature>
+                <WeatherContainer>
+                  <TempeatureContainer>
+                    <Temperature>{`${day.temp}ºC`}</Temperature>
 
-                <Icon
-                  name={weatherTypes[day.weather].icon}
-                  size={40}
-                  color={colors.orange}
-                />
-              </TempeatureContainer>
-            </WeatherContainer>
-          </DayContainer>
+                    <Icon
+                      name={weatherTypes[day.weather].icon}
+                      size={40}
+                      color={weatherTypes[day.weather].color}
+                    />
+                  </TempeatureContainer>
+                </WeatherContainer>
+              </DayContainer>
+            )}
+          </>
         )}
       />
     </Container>

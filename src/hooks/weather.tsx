@@ -41,7 +41,13 @@ export const WeatherContext = createContext<WeatherContextData>(
 
 export const WeatherProvider: React.FC = ({ children }) => {
   const [citiesIds, setCitiesIds] = useState<number[]>([]);
-  const [citiesWeather, setCitiesWeather] = useState<CityWeather[]>([]);
+  const [citiesWeather, setCitiesWeather] = useState<CityWeather[]>([
+    { id: 1 } as CityWeather,
+    { id: 2 } as CityWeather,
+    { id: 3 } as CityWeather,
+    { id: 4 } as CityWeather,
+    { id: 5 } as CityWeather,
+  ]);
   const [loading, setLoading] = useState(true);
 
   const addCity = useCallback(
@@ -71,10 +77,10 @@ export const WeatherProvider: React.FC = ({ children }) => {
           max: Math.round(main.temp_max),
         };
 
-        const newCitiesIds = [...citiesIds, id];
+        const newCitiesIds = [id, ...citiesIds];
 
         setCitiesIds(newCitiesIds);
-        setCitiesWeather((state) => [...state, cityWeather]);
+        setCitiesWeather((state) => [cityWeather, ...state]);
 
         await AsyncStorage.setItem(
           'ReWeather@ids',
