@@ -5,14 +5,15 @@ import React, {
   useContext,
   useEffect,
 } from 'react';
+import AsyncStorage from '@react-native-community/async-storage';
 import api from '../services/api';
 
 import CityWeatherDTO from '~/dtos/CityWeatherDTO';
 
-interface CityWeather {
+export interface CityWeather {
   id: number;
   name: string;
-  temp: string;
+  temp: number;
   min: number;
   max: number;
   weather: string;
@@ -23,51 +24,90 @@ interface CityWeather {
 interface WeatherContextData {
   citiesWeather: CityWeather[];
   loading: boolean;
-  addCity(id: number): void;
+  addCity(name: string): void;
   removeCity(id: number): void;
 }
 
 const API_KEY = '56cd1e8db1435f9c17de8b0349caaee9';
+const apiParams = {
+  appid: API_KEY,
+  units: 'metric',
+  lang: 'pt',
+};
 
 export const WeatherContext = createContext<WeatherContextData>(
   {} as WeatherContextData
 );
 
 export const WeatherProvider: React.FC = ({ children }) => {
-  const [citiesIds, setCitiesIds] = useState<number[]>([3469968]);
+  const [citiesIds, setCitiesIds] = useState<number[]>([]);
   const [citiesWeather, setCitiesWeather] = useState<CityWeather[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const addCity = useCallback((id: number) => {
-    setCitiesIds((state) => {
-      const findCity = state.some((city) => city === id);
+  const addCity = useCallback(
+    async (name: string) => {
+      setLoading(true);
 
-      if (!findCity) {
-        return [...state, id];
+      const response = await api.get('/weather', {
+        params: {
+          q: name,
+          ...apiParams,
+        },
+      });
+
+      const { id, name: cityName, coord, weather, main } = response.data;
+
+      const findCityIds = citiesIds.some((cityId) => id === cityId);
+
+      if (!findCityIds) {
+        const cityWeather: CityWeather = {
+          id,
+          name: cityName,
+          lat: coord.lat,
+          lon: coord.lon,
+          weather: weather[0].main,
+          temp: Math.round(main.temp),
+          min: Math.round(main.temp_min),
+          max: Math.round(main.temp_max),
+        };
+
+        const newCitiesIds = [...citiesIds, id];
+
+        setCitiesIds(newCitiesIds);
+        setCitiesWeather((state) => [...state, cityWeather]);
+
+        await AsyncStorage.setItem(
+          'ReWeather@ids',
+          JSON.stringify(newCitiesIds)
+        );
       }
 
-      return state;
-    });
-  }, []);
+      setLoading(false);
+    },
+    [citiesIds]
+  );
 
   const removeCity = useCallback((id: number) => {
     setCitiesIds((state) => state.filter((city) => city !== id));
+    setCitiesWeather((state) => state.filter((city) => city.id !== id));
   }, []);
 
   useEffect(() => {
     async function loadCitiesWeather(): Promise<void> {
-      try {
-        setLoading(true);
+      setLoading(true);
+      const ids = await AsyncStorage.getItem('ReWeather@ids');
+
+      if (ids) {
+        const parsedIds = JSON.parse(ids);
 
         const response = await api.get('/group', {
           params: {
-            id: citiesIds.join(','),
-            appid: API_KEY,
-            units: 'metric',
-            lang: 'pt',
+            id: parsedIds.join(','),
+            ...apiParams,
           },
         });
 
+        setCitiesIds(parsedIds);
         setCitiesWeather(
           response.data.list.map((city: CityWeatherDTO) => {
             const { id, name, coord, main, weather } = city;
@@ -84,15 +124,13 @@ export const WeatherProvider: React.FC = ({ children }) => {
             };
           })
         );
-
-        setLoading(false);
-      } catch (err) {
-        setLoading(false);
       }
+
+      setLoading(false);
     }
 
     loadCitiesWeather();
-  }, [citiesIds]);
+  }, []);
 
   return (
     <WeatherContext.Provider
