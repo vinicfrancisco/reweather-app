@@ -42,6 +42,7 @@ export const CityContainer = styled.TouchableOpacity`
   justify-content: space-between;
   margin-bottom: 16px;
   padding: 20px;
+  position: relative;
 `;
 
 export const InfoContainer = styled.View``;
@@ -83,4 +84,4 @@ export const Temperature = styled.Text`
   margin-right: 16px;
 `;
 
-export const FavoriteButton = styled.TouchableOpacity``;
+export const RemoveButton = styled.TouchableOpacity``;

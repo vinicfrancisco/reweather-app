@@ -83,7 +83,7 @@ export const WeatherProvider: React.FC = ({ children }) => {
         setCitiesWeather((state) => [cityWeather, ...state]);
 
         await AsyncStorage.setItem(
-          'ReWeather@ids',
+          '@ReWeather:ids',
           JSON.stringify(newCitiesIds)
         );
       }
@@ -93,43 +93,56 @@ export const WeatherProvider: React.FC = ({ children }) => {
     [citiesIds]
   );
 
-  const removeCity = useCallback((id: number) => {
-    setCitiesIds((state) => state.filter((city) => city !== id));
-    setCitiesWeather((state) => state.filter((city) => city.id !== id));
-  }, []);
+  const removeCity = useCallback(
+    async (id: number) => {
+      const ids = citiesIds.filter((city) => city !== id);
+
+      setCitiesIds(ids);
+      setCitiesWeather((state) => state.filter((city) => city.id !== id));
+
+      await AsyncStorage.setItem('@ReWeather:ids', JSON.stringify(ids));
+    },
+    [citiesIds]
+  );
 
   useEffect(() => {
     async function loadCitiesWeather(): Promise<void> {
       setLoading(true);
-      const ids = await AsyncStorage.getItem('ReWeather@ids');
+      const ids = await AsyncStorage.getItem('@ReWeather:ids');
 
       if (ids) {
         const parsedIds = JSON.parse(ids);
 
-        const response = await api.get('/group', {
-          params: {
-            id: parsedIds.join(','),
-            ...apiParams,
-          },
-        });
+        if (parsedIds.length > 0) {
+          const response = await api.get('/group', {
+            params: {
+              id: parsedIds.join(','),
+              ...apiParams,
+            },
+          });
 
-        setCitiesIds(parsedIds);
-        setCitiesWeather(
-          response.data.list.map((city: CityWeatherDTO) => {
-            const { id, name, coord, main, weather } = city;
+          setCitiesIds(parsedIds);
+          setCitiesWeather(
+            response.data.list.map((city: CityWeatherDTO) => {
+              const { id, name, coord, main, weather } = city;
 
-            return {
-              id,
-              name,
-              lat: coord.lat,
-              lon: coord.lon,
-              weather: weather[0].main,
-              temp: Math.round(main.temp),
-              min: Math.round(main.temp_min),
-              max: Math.round(main.temp_max),
-            };
-          })
-        );
+              return {
+                id,
+                name,
+                lat: coord.lat,
+                lon: coord.lon,
+                weather: weather[0].main,
+                temp: Math.round(main.temp),
+                min: Math.round(main.temp_min),
+                max: Math.round(main.temp_max),
+              };
+            })
+          );
+        } else {
+          setCitiesWeather([]);
+        }
+      } else {
+        setCitiesWeather([]);
       }
 
       setLoading(false);
@@ -140,7 +153,12 @@ export const WeatherProvider: React.FC = ({ children }) => {
 
   return (
     <WeatherContext.Provider
-      value={{ citiesWeather, loading, addCity, removeCity }}
+      value={{
+        citiesWeather,
+        loading,
+        addCity,
+        removeCity,
+      }}
     >
       {children}
     </WeatherContext.Provider>

@@ -23,7 +23,7 @@ import {
   WeatherContainer,
   TempeatureContainer,
   Temperature,
-  FavoriteButton,
+  RemoveButton,
 } from './styles';
 
 interface NavigateToDetailProps {
@@ -34,7 +34,7 @@ interface NavigateToDetailProps {
 
 const Home: React.FC = () => {
   const { navigate } = useNavigation();
-  const { citiesWeather, loading } = useWeather();
+  const { citiesWeather, loading, removeCity } = useWeather();
 
   const handleNavigateToSearch = useCallback(() => {
     navigate('Search');
@@ -98,9 +98,9 @@ const Home: React.FC = () => {
                     />
                   </TempeatureContainer>
 
-                  <FavoriteButton onPress={() => {}}>
-                    <Icon name="heart" size={26} color={colors.red} />
-                  </FavoriteButton>
+                  <RemoveButton onPress={() => removeCity(city.id)}>
+                    <Icon name="trash" size={26} color={colors.red} />
+                  </RemoveButton>
                 </WeatherContainer>
               </CityContainer>
             )}
