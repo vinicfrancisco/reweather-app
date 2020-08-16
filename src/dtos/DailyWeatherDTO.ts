@@ -1,4 +1,5 @@
 export default interface DailyWeatherDTO {
+  dt: number;
   temp: {
     day: number;
     min: number;
