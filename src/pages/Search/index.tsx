@@ -2,25 +2,16 @@ import React, { useCallback, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
 
-import {
-  Container,
-  Header,
-  BackButton,
-  SearchContainer,
-  SearchInput,
-  SearchIcon,
-  CitiesList,
-  CityContainer,
-  CityName,
-  AddCityButton,
-} from './styles';
+import { useWeather } from '~/hooks/weather';
 import colors from '~/styles/colors';
+
+import { Container, Header, BackButton, SearchInput } from './styles';
 
 const Search: React.FC = () => {
   const { goBack } = useNavigation();
+  const { addCity } = useWeather();
 
   const [searchValue, setSearchValue] = useState('');
-  const [isFocused, setIsFocused] = useState(false);
 
   const navigateBack = useCallback(() => {
     goBack();
@@ -30,13 +21,13 @@ const Search: React.FC = () => {
     setSearchValue(value);
   }, []);
 
-  const handleInputFocus = useCallback(() => {
-    setIsFocused(true);
-  }, []);
-
-  const handleInputBlur = useCallback(() => {
-    setIsFocused(false);
-  }, []);
+  const handlePressCity = useCallback(
+    (data, details = null) => {
+      goBack();
+      addCity(data.structured_formatting.main_text);
+    },
+    [goBack, addCity]
+  );
 
   return (
     <Container>
@@ -45,38 +36,26 @@ const Search: React.FC = () => {
           <Icon name="x" size={24} color={colors.gray} />
         </BackButton>
 
-        <SearchContainer>
-          <SearchIcon
-            name="search"
-            size={20}
-            color={isFocused ? colors.orange : colors.gray}
-          />
-
-          <SearchInput
-            keyboardAppearance="dark"
-            placeholder="Buscar cidade"
-            placeholderTextColor={colors.gray}
-            value={searchValue}
-            onFocus={handleInputFocus}
-            onBlur={handleInputBlur}
-            onChangeText={handleChangeInput}
-          />
-        </SearchContainer>
+        <SearchInput
+          isRowScrollable={false}
+          debounce={300}
+          nearbyPlacesAPI="GooglePlacesSearch"
+          textInputProps={{
+            keyboardAppearance: 'dark',
+            placeholderTextColor: colors.gray,
+            value: searchValue,
+            onChangeText: handleChangeInput,
+          }}
+          placeholder="Buscar cidade"
+          enablePoweredByContainer={false}
+          onPress={handlePressCity}
+          query={{
+            key: 'AIzaSyAgtT_EwKTaqsCTjxgYEGAR7R1B_wh5L0g',
+            language: 'pt',
+            types: '(cities)',
+          }}
+        />
       </Header>
-
-      <CitiesList
-        data={[1, 2, 3, 4, 5]}
-        keyExtractor={(city) => city}
-        renderItem={({ item: city }) => (
-          <CityContainer>
-            <CityName>Blumenau</CityName>
-
-            <AddCityButton onPress={() => {}}>
-              <Icon name="plus" size={25} color={colors.orange} />
-            </AddCityButton>
-          </CityContainer>
-        )}
-      />
     </Container>
   );
 };
