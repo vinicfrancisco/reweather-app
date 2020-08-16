@@ -1,10 +1,7 @@
 import styled from 'styled-components/native';
 import { Platform } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import {
-  GooglePlacesAutocomplete,
-  GooglePlacesAutocompleteProps,
-} from 'react-native-google-places-autocomplete';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import colors from '~/styles/colors';
 
 export const Container = styled.View`
@@ -26,11 +23,7 @@ export const BackButton = styled.TouchableOpacity`
   justify-content: center;
 `;
 
-export const SearchInput = styled(
-  GooglePlacesAutocomplete as new () => GooglePlacesAutocomplete<
-    GooglePlacesAutocompleteProps
-  >
-).attrs(() => ({
+export const SearchInput = styled(GooglePlacesAutocomplete).attrs(() => ({
   placeholderTextColor: '#333',
   styles: {
     container: {

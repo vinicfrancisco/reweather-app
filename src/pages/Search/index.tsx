@@ -37,7 +37,6 @@ const Search: React.FC = () => {
         </BackButton>
 
         <SearchInput
-          isRowScrollable={false}
           debounce={300}
           nearbyPlacesAPI="GooglePlacesSearch"
           textInputProps={{
