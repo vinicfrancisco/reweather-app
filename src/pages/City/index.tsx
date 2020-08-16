@@ -1,8 +1,12 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/Feather';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { fromUnixTime, getDay } from 'date-fns';
 
+import api from '~/services/api';
 import colors from '~/styles/colors';
+import DailyWeatherDTO from '~/dtos/DailyWeatherDTO';
+import weatherTypes from '~/utils/weatherTypes';
 
 import {
   Container,
@@ -20,12 +24,90 @@ import {
   Temperature,
 } from './styles';
 
+const API_KEY = '56cd1e8db1435f9c17de8b0349caaee9';
+const apiParams = {
+  appid: API_KEY,
+  units: 'metric',
+  lang: 'pt',
+};
+
+export interface DayWeather {
+  date: Date;
+  temp: number;
+  min: number;
+  max: number;
+  weather: string;
+}
+
+interface RouteParams {
+  city: string;
+  lat: number;
+  lon: number;
+}
+
 const City: React.FC = () => {
   const { goBack } = useNavigation();
+  const route = useRoute();
+
+  const { lat, lon, city } = route.params as RouteParams;
+
+  const [weekWeather, setWeekWeather] = useState<DayWeather[]>([]);
 
   const handleGoBack = useCallback(() => {
     goBack();
   }, [goBack]);
+
+  const getWeekDay = useCallback((date: Date) => {
+    const weekDay = getDay(date);
+
+    switch (weekDay) {
+      case 0:
+        return 'Domingo';
+      case 1:
+        return 'Segunda-feira';
+      case 2:
+        return 'Terça-feira';
+      case 3:
+        return 'Quarta-feira';
+      case 4:
+        return 'Quinta-feira';
+      case 5:
+        return 'Sexta-feira';
+      case 6:
+        return 'Sábado';
+      default:
+        return '';
+    }
+  }, []);
+
+  useEffect(() => {
+    async function loadData(): Promise<void> {
+      const response = await api.get('/onecall', {
+        params: {
+          exclude: 'current,minutely,hourly',
+          lat,
+          lon,
+          ...apiParams,
+        },
+      });
+
+      setWeekWeather(
+        response.data.daily.map((day: DailyWeatherDTO) => {
+          const { dt, temp, weather } = day;
+
+          return {
+            date: fromUnixTime(dt),
+            temp: Math.round(temp.day),
+            min: Math.round(temp.min),
+            max: Math.round(temp.max),
+            weather: weather[0].main,
+          };
+        })
+      );
+    }
+
+    loadData();
+  }, [lat, lon]);
 
   return (
     <Container>
@@ -34,27 +116,33 @@ const City: React.FC = () => {
           <Icon name="chevron-left" size={24} color={colors.gray} />
         </BackButton>
 
-        <HeaderTitle>Blumenau</HeaderTitle>
+        <HeaderTitle>{city}</HeaderTitle>
       </Header>
 
       <DaysList
-        data={[1, 2, 3, 4, 5]}
-        keyExtractor={(city) => city}
-        renderItem={({ item: city }) => (
+        data={weekWeather}
+        keyExtractor={(day) => String(day.date)}
+        renderItem={({ item: day }) => (
           <DayContainer>
             <InfoContainer>
-              <DayName>Segunda</DayName>
+              <DayName>{getWeekDay(day.date)}</DayName>
 
-              <WeatherDescription>Sol aberto</WeatherDescription>
+              <WeatherDescription>
+                {weatherTypes[day.weather].title}
+              </WeatherDescription>
 
-              <TemperatureRange>20ºC - 25ºC</TemperatureRange>
+              <TemperatureRange>{`${day.min}ºC - ${day.max}ºC`}</TemperatureRange>
             </InfoContainer>
 
             <WeatherContainer>
               <TempeatureContainer>
-                <Temperature>23ºC</Temperature>
+                <Temperature>{`${day.temp}ºC`}</Temperature>
 
-                <Icon name="sun" size={40} color={colors.orange} />
+                <Icon
+                  name={weatherTypes[day.weather].icon}
+                  size={40}
+                  color={colors.orange}
+                />
               </TempeatureContainer>
             </WeatherContainer>
           </DayContainer>

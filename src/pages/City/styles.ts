@@ -2,6 +2,7 @@ import styled from 'styled-components/native';
 import { FlatList } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import colors from '~/styles/colors';
+import { DayWeather } from './index';
 
 export const Container = styled.View`
   flex: 1;
@@ -26,7 +27,7 @@ export const BackButton = styled.TouchableOpacity`
   margin-right: 16px;
 `;
 
-export const DaysList = styled(FlatList as new () => FlatList)`
+export const DaysList = styled(FlatList as new () => FlatList<DayWeather>)`
   padding: 32px 24px 16px;
 `;
 
