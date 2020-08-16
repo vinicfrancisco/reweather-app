@@ -28,6 +28,7 @@ import {
 interface NavigateToDetailProps {
   lat: number;
   lon: number;
+  city: string;
 }
 
 const Home: React.FC = () => {
@@ -39,8 +40,8 @@ const Home: React.FC = () => {
   }, [navigate]);
 
   const handleNavigateToDetail = useCallback(
-    ({ lat, lon }: NavigateToDetailProps) => {
-      navigate('City', { lat, lon });
+    ({ lat, lon, city }: NavigateToDetailProps) => {
+      navigate('City', { lat, lon, city });
     },
     [navigate]
   );
@@ -67,6 +68,7 @@ const Home: React.FC = () => {
               handleNavigateToDetail({
                 lat: city.lat,
                 lon: city.lon,
+                city: city.name,
               })
             }
           >
