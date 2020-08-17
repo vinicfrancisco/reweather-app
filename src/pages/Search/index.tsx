@@ -35,26 +35,26 @@ const Search: React.FC = () => {
         <BackButton onPress={navigateBack}>
           <Icon name="x" size={24} color={colors.gray} />
         </BackButton>
-
-        <SearchInput
-          debounce={300}
-          nearbyPlacesAPI="GooglePlacesSearch"
-          textInputProps={{
-            keyboardAppearance: 'dark',
-            placeholderTextColor: colors.gray,
-            value: searchValue,
-            onChangeText: handleChangeInput,
-          }}
-          placeholder="Buscar cidade"
-          enablePoweredByContainer={false}
-          onPress={handlePressCity}
-          query={{
-            key: 'AIzaSyAgtT_EwKTaqsCTjxgYEGAR7R1B_wh5L0g',
-            language: 'pt',
-            types: '(cities)',
-          }}
-        />
       </Header>
+
+      <SearchInput
+        debounce={300}
+        nearbyPlacesAPI="GooglePlacesSearch"
+        textInputProps={{
+          keyboardAppearance: 'dark',
+          placeholderTextColor: colors.gray,
+          value: searchValue,
+          onChangeText: handleChangeInput,
+        }}
+        placeholder="Buscar cidade"
+        enablePoweredByContainer={false}
+        onPress={handlePressCity}
+        query={{
+          key: 'AIzaSyAgtT_EwKTaqsCTjxgYEGAR7R1B_wh5L0g',
+          language: 'pt',
+          types: '(cities)',
+        }}
+      />
     </Container>
   );
 };

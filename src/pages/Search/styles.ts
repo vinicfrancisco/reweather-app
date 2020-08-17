@@ -15,6 +15,9 @@ export const Header = styled.View`
   justify-content: space-between;
   padding: 16px;
   padding-top: ${getStatusBarHeight() + 24}px;
+  position: absolute;
+  top: 0;
+  width: 100%;
 `;
 
 export const BackButton = styled.TouchableOpacity`
@@ -24,22 +27,19 @@ export const BackButton = styled.TouchableOpacity`
 `;
 
 export const SearchInput = styled(GooglePlacesAutocomplete).attrs(() => ({
-  placeholderTextColor: '#333',
+  placeholderTextColor: colors.gray,
   styles: {
     container: {
-      position: 'absolute',
-      left: 32,
-      top: Platform.select({ ios: 42, android: 22 }),
-      paddingRight: 32,
+      top: Platform.select({ ios: 42, android: 36 }),
       width: '100%',
     },
     textInputContainer: {
       backgroundColor: 'transparent',
       borderBottomWidth: 0,
       borderTopWidth: 0,
-      flex: 1,
-      paddingHorizontal: 16,
+      left: 44,
       paddingBottom: 92,
+      paddingRight: 60,
     },
     textInput: {
       backgroundColor: colors.softBlack,
@@ -49,8 +49,6 @@ export const SearchInput = styled(GooglePlacesAutocomplete).attrs(() => ({
       fontFamily: 'Roboto-Regular',
       height: 48,
       marginRight: 0,
-      marginBottom: 50,
-      paddingHorizontal: 16,
     },
     listView: {},
     description: {
@@ -60,6 +58,7 @@ export const SearchInput = styled(GooglePlacesAutocomplete).attrs(() => ({
     row: {
       backgroundColor: colors.black,
       borderRadius: 10,
+      marginHorizontal: 16,
       padding: 20,
       height: 80,
     },
