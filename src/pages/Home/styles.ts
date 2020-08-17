@@ -31,6 +31,29 @@ export const HeaderWeatherTitle = styled.Text`
 
 export const SearchButton = styled.TouchableOpacity``;
 
+export const NoCitiesContainer = styled.View`
+  align-items: center;
+  flex: 1;
+  justify-content: center;
+  margin-top: 150px;
+`;
+
+export const NoCitiesTitle = styled.Text`
+  color: ${colors.white};
+  font-family: 'Roboto-Medium';
+  font-size: 28px;
+  margin-top: 16px;
+`;
+
+export const NoCitiesDescription = styled.Text`
+  color: ${colors.gray};
+  font-size: 16px;
+  font-family: 'Roboto-Regular';
+  margin-top: 8px;
+  max-width: 60%;
+  text-align: center;
+`;
+
 export const CitiesList = styled(FlatList as new () => FlatList<CityWeather>)`
   padding: 32px 24px 16px;
 `;

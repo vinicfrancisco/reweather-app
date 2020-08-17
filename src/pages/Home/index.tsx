@@ -14,6 +14,9 @@ import {
   HeaderTitle,
   HeaderWeatherTitle,
   SearchButton,
+  NoCitiesContainer,
+  NoCitiesTitle,
+  NoCitiesDescription,
   CitiesList,
   CityContainer,
   InfoContainer,
@@ -59,6 +62,18 @@ const Home: React.FC = () => {
           <Icon name="search" size={28} color={colors.orange} />
         </SearchButton>
       </Header>
+
+      {!citiesWeather.length && (
+        <NoCitiesContainer>
+          <Icon name="frown" size={120} color={colors.black} />
+
+          <NoCitiesTitle>Sua lista está vazia</NoCitiesTitle>
+
+          <NoCitiesDescription>
+            Busque por novas cidades para ver como está o clima
+          </NoCitiesDescription>
+        </NoCitiesContainer>
+      )}
 
       <CitiesList
         data={citiesWeather}
