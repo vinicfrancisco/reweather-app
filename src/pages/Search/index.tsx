@@ -50,7 +50,7 @@ const Search: React.FC = () => {
         enablePoweredByContainer={false}
         onPress={handlePressCity}
         query={{
-          key: 'AIzaSyAgtT_EwKTaqsCTjxgYEGAR7R1B_wh5L0g',
+          key: '',
           language: 'pt',
           types: '(cities)',
         }}
