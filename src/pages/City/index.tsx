@@ -26,7 +26,7 @@ import {
   Temperature,
 } from './styles';
 
-const API_KEY = '56cd1e8db1435f9c17de8b0349caaee9';
+const API_KEY = '';
 const apiParams = {
   appid: API_KEY,
   units: 'metric',
